@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SignUp</title>
+	<link rel="stylesheet" type="text/css" href="style1.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+
+<div class="container" id="container">
+	<div class="form-container sign-up-container">
+
+	<form id="signupform" action="http://127.0.0.1:8000/auth/signup" method="post" onsubmit="return validatform()">
+		<h1>Create Account</h1>
+		<span>or use your email for registration</span>
+		<label for="name">What should we call you?*</label>
+		<input type="text" name="name" placeholder="Name" required>
+		<label for="email">Email address*</label>
+		<input type="email" name="email" placeholder="Email" required>
+		<label for="password">Create a new password*</label>
+		<input type="password" name="password" placeholder="Password" required>
+		<label for="confirm_password">Confirm new password*</label>
+		<input type="password" name="confirm_password" placeholder="Password" required>
+		<div class="g-recaptcha" data-sitekey="6LcukiIrAAAAALhQRLiTzQemejjguv-_4xtZPfZH"></div>
+		<button>SignUp</button>
+	</form>
+	</div>
+
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>Welcome Back!</h1>
+				<p> Please login with your personal info</p>
+				<a href="index.html">
+				<button class="ghost" id="signIn">Sign In</button>
+			</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+    function validateform() {
+
+		var password = document.getElementById("password").value;
+		var confirm_password = document.getElementById("confirm_password").value;
+		if (password!= confirm_password){
+			alert("Passwords do not match.");
+			return false;
+		}
+
+        var response = grecaptcha.getResponse();
+        if (response.length === 0) {
+            alert("Please complete the reCAPTCHA.");
+            return false;
+            }
+        return true;
+        }
+     </script>
+    
+</body>
+</html>

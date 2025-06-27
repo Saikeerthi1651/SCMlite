@@ -1,0 +1,53 @@
+/* Alert System */
+.alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  max-width: 400px;
+  transform: translateX(150%);
+  transition: transform 0.3s ease-out;
+  color: white;
+}
+
+.alert.show {
+  transform: translateX(0);
+}
+
+.alert-success {
+  background-color: #2ecc71; /* richer green */
+}
+
+.alert-error {
+  background-color: #e74c3c; /* bold red */
+}
+
+.alert-warning {
+  background-color: #f39c12; /* amber orange */
+}
+
+.alert-info {
+  background-color: #1e272e; /* dark navy tone matching previous theme */
+}
+
+.alert-close {
+  margin-left: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* Animation for alert entry */
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; }
+}

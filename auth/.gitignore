@@ -1,0 +1,39 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# FastAPI + Uvicorn logs
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# VSCode and other IDE settings
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Frontend cache (if any)
+frontend/node_modules/
+frontend/dist/
+frontend/.cache/
+frontend/build/
+
+# PIP dependency lock files (optional)
+poetry.lock
+Pipfile.lock
+
+# MongoDB local dump (if using mongodump)
+dump/

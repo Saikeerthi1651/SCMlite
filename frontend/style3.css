@@ -1,0 +1,241 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body, html {
+  height: 100%;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  position: relative;
+}
+
+.sidebar {
+  width: 20vw;
+  background: #1e272e;
+  padding: 20px 0;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.nav-top li {
+  margin-bottom: 20px;
+}
+
+.sidebar li {
+  padding: 12px 16px;
+  color: #ffffff;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.3s;
+  border-radius: 10px;
+  align-items: start;
+  width: 100%;
+}
+
+.sidebar li:hover,
+.sidebar .active {
+  background-color: rgba(0, 206, 201, 0.2);
+}
+
+a {
+  text-decoration: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+a span {
+  padding-left: 15px;
+}
+
+/* Main content */
+.main-content {
+  margin-left: 20vw;
+  padding: 20px;
+  border-radius: 20px;
+  background: url('map.jpg') no-repeat center center/cover;
+  backdrop-filter: blur(10px);
+  width: 100%;
+  position: relative;
+  color: #000000;
+}
+
+.main-content::before {
+  backdrop-filter: blur(5px);
+}
+
+/* Header */
+.main-header {
+  width: 100%;
+  padding-top: 15px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.main-header h1 {
+  font-size: 28px;
+  color: #ffffff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.main-header p {
+  font-size: 14px;
+  color: #dfe6e9;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+  margin-top: 8px;
+}
+
+/* Form container */
+.form-container {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 15px;
+  padding: 30px 40px;
+  padding-top: 10px;
+  margin: 0 auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.form-container select {
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 15px;
+  padding: 30px 40px;
+  margin: 0 auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.form-container .left,
+.form-container .right {
+  width: 48%;
+  float: left;
+  box-sizing: border-box;
+  padding-bottom: 10px;
+}
+
+.form-container .left {
+  padding-right: 4%;
+}
+
+.form-container .right {
+  padding-left: 4%;
+}
+
+.form-container::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.form-container label {
+  display: block;
+  font-weight: 600;
+  margin: 12px 0 6px 0;
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.form-container input,
+.form-container select {
+  width: 100%;
+  height: 35px;
+  padding: 6px 12px;
+  border: 1px solid #b2bec3;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s ease;
+}
+
+.form-container input:focus,
+.form-container select:focus {
+  border-color: #00cec9;
+  outline: none;
+  box-shadow: 0 0 6px rgba(0, 206, 201, 0.5);
+}
+
+/* Buttons container */
+button {
+  border-radius: 20px;
+  border: 1px solid #00cec9;
+  background-color: #00cec9;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 12px 45px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 80ms ease-in, background-color 0.3s ease;
+  min-width: 160px;
+  margin-left: 13%;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+button:focus {
+  outline: none;
+}
+
+button[type="submit"]:hover {
+  background-color: transparent;
+  color: #00cec9;
+  border: 1px solid #00cec9;
+}
+
+button[type="reset"] {
+  background-color: transparent;
+  color: #00cec9;
+  border: 1px solid #00cec9;
+}
+
+button[type="reset"]:hover {
+  background-color: #00cec9;
+  color: #ffffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .form-container .left,
+  .form-container .right {
+    width: 100%;
+    float: none;
+    padding: 0;
+  }
+
+  .buttons {
+    flex-direction: column;
+    gap: 15px;
+    padding: 0 20px;
+  }
+
+  .buttons button {
+    width: 100%;
+    min-width: unset;
+  }
+}

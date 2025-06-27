@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <link rel="stylesheet" href="alerts.css">
+    <script src="/js/alerts.js"></script>
+</head>
+
+<body>
+    <div class="container" id="container">
+    <div class="form-container sign-in-container">
+        <form onsubmit="return handleLogin(event)">
+            <h1>Sign In</h1>
+    
+        <span>or use your account</span>
+        <label for="email">Email address*</label>
+        <input type="email" name="email" placeholder="Email" required>
+        <label for="password">Password*</label>
+        <input type="password" name="password" placeholder="Password" required>
+        <div class="g-recaptcha" data-sitekey="6LcukiIrAAAAALhQRLiTzQemejjguv-_4xtZPfZH"></div>
+        <a href="#">Forgot Your Password</a>
+        
+
+        <button >Sign In</button>
+        
+        
+        </form>
+
+    </div>
+
+    <div class="overlay-container ">
+        <div class="overlay">
+            <div class="overlay-panel  overlay-right">
+
+                <h1>Create your account!</h1>
+                <p>Enter your personal details and start journey with us</p>
+                <a href="signup.html">
+                <button class="ghost" id="signUp">Sign Up</button>
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+            const form = event.target;
+
+            // Get form data
+            const email = form.email.value;
+            const password = form.password.value;
+            const recaptcha = grecaptcha.getResponse();
+
+            try {
+                const res = await fetch("http://127.0.0.1:8000/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        username: email,  // Note: FastAPI OAuth2 expects 'username' not 'email'
+                        password: password,
+                        recaptcha_token: recaptcha
+                    })
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    throw new Error(errorData.detail || "Login failed");
+                }
+
+                const data = await res.json();
+                
+                // Store tokens and user data
+                localStorage.setItem("access_token", data.access_token);
+                localStorage.setItem("user_name", data.user.name);
+                localStorage.setItem("user_email", data.user.email);
+                localStorage.setItem("user_role", data.user.role);
+                
+                window.location.href = "dashboard.html";
+            } catch (error) {
+                alert(error.message || "Login failed. Please try again.");
+                grecaptcha.reset();
+            }
+            return false;
+        }
+    </script>
+
+</body>
+</html>

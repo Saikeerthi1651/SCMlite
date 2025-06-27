@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Device Data</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <style>
+      /* === Reset and Base Styles === */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      body, html {
+        height: 100%;
+      }
+
+      /* === Layout Container === */
+      .container {
+        display: flex;
+        height: 100vh;
+      }
+
+      /* === Sidebar Styles === */
+      .sidebar {
+        width: 20vw;
+        background: #1e272e;
+        padding: 20px 0;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .nav-top li {
+        margin-bottom: 20px;
+      }
+
+      .sidebar li {
+        display: flex;
+        align-items: start;
+        padding: 12px 16px;
+        font-size: 16px;
+        color: #ffffff;
+        cursor: pointer;
+        border-radius: 10px;
+        transition: background 0.3s;
+        width: 100%;
+      }
+
+      .sidebar li:hover,
+      .sidebar .active {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .sidebar .logout {
+        color: #ffffff;
+      }
+
+      .nav-bottom {
+        margin-top: auto;
+      }
+
+      a {
+        text-decoration: none;
+        color: white;
+      }
+
+      span {
+        padding-left: 15px;
+      }
+
+      /* === Main Content Area === */
+      .main-content {
+        flex-grow: 1;
+        padding: 20px;
+        border-radius: 20px;
+        background: url('map.jpg');
+        background-size: cover;
+        position: relative;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .main-content::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        backdrop-filter: blur(5px);
+        z-index: -1;
+        border-radius: 20px;
+      }
+
+      /* === Header === */
+      .main-header {
+        width: 100%;
+        padding: 20px 30px;
+        margin-bottom: 10px;
+        align-self: center;
+        text-align: center;
+      }
+
+      .main-header h1 {
+        font-size: 28px;
+        color: #ffffff;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      /* === Controls === */
+      .controls {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        margin-bottom: 8px;
+        z-index: 1;
+      }
+
+      .controls label {
+        font-weight: 500;
+        color: #ffffff;
+      }
+
+      .controls select {
+        margin-left: 8px;
+        padding: 7px 12px;
+        border-radius: 6px;
+        border: 1px solid #ffffff88;
+        background: #1e272e;;
+        font-size: 1rem;
+      }
+
+      @media (max-width: 700px) {
+        .controls {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
+        }
+
+        .main-content {
+          padding: 8px;
+        }
+      }
+
+      /* === Table Container === */
+      .table-container {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        width: 100%;
+        min-height: 0;
+        overflow-x: auto;
+        background:  rgba(255, 255, 255, 0.05);
+        border-radius: 18px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+        padding: 24px;
+        margin-top: 16px;
+        z-index: 1;
+      }
+
+      /* === Table Styles === */
+      #data-table {
+        width: 100%;
+        min-width: 900px;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-size: 1rem;
+        background: transparent;
+        table-layout: fixed;
+      }
+
+      #data-table thead tr {
+        background: #1e272e;
+        color:  #ffffff;
+      }
+
+      #data-table th,
+      #data-table td {
+        padding: 16px 10px;
+        text-align: center;
+        border-bottom: 1.5px solid #ffffff55;
+        color: #ffffff;
+        word-break: break-word;
+      }
+
+      #data-table th {
+        font-size: 1.08rem;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+      }
+
+      #data-table tbody tr:nth-child(even) {
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      #data-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transition: background 0.2s;
+      }
+
+      /* === Responsive Table === */
+      @media (max-width: 1100px) {
+        .table-container {
+          padding: 8px;
+        }
+
+        #data-table th,
+        #data-table td {
+          padding: 10px 5px;
+          font-size: 0.97rem;
+        }
+      }
+
+
+  </style>
+
+  <script>
+      function getToken() {
+        return localStorage.getItem("access_token"); 
+      }
+      document.addEventListener("DOMContentLoaded", function() {
+        const role = localStorage.getItem("user_role"); 
+        if (role === "admin") {
+          const adminToolsItem = document.getElementById("admin-tools-item");
+          if (adminToolsItem) {
+            adminToolsItem.style.display = "block";
+          }
+        }
+      });
+    let allDeviceData = [];
+
+    async function loadDeviceData() {
+     const token = localStorage.getItem('access_token');
+     if (!token){
+        alert('Session expired or unauthorized. Please log in.');
+        window.location.href = '/frontend/index.html';
+        return;
+     }
+
+      try {
+        const response = await fetch('/device/data', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (response.status === 401) {
+          localStorage.clear();
+          alert('Session expired or unauthorized. Please log in.');
+          window.location.href = '/frontend/index.html';
+          return;
+        }
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Failed to load device data');
+        }
+
+        const result = await response.json();
+        allDeviceData = result.data || [];
+        renderTable();
+      } catch (error) {
+        console.error('Error loading device data:', error);
+        showErrorToast('Failed to load device data. Please try again later.');
+      }
+    }
+    function showErrorToast(message){
+      const toast = document.createElement('div');
+      toast.style.position = 'fixed';
+      toast.style.bottom = '20px';
+      toast.style.right = '20px';
+      toast.style.padding = '15px';
+      toast.style.backgroundColor = '#54baff';
+      toast.style.color = 'white';
+      toast.style.borderRadius = '5px';
+      toast.style.zIndex = '1000';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(()=>{
+        document.body.removeChild(toast);
+      }, 5000);
+
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector("#data-table tbody");
+      const deviceId = document.getElementById('deviceIdSelect').value;
+      const limit = parseInt(document.getElementById('limitSelect').value, 10);
+
+      const normalizedData = allDeviceData.map(item => ({...item,sensor_id: item.sensor_id || item.Device_ID}));
+      // Filter by Device ID
+      let filteredData = normalizedData;
+      if (deviceId !== "all") {
+        filteredData = filteredData.filter(item => String(item.sensor_id) === deviceId);
+      }
+
+      const limitedData = filteredData.slice(0, limit);
+
+      // Render table rows
+      tbody.innerHTML = '';
+      limitedData.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.sensor_id || 'N/A'}</td>
+          <td>${item.Battery_Level || 'N/A'}</td>
+          <td>${item.First_Sensor_temperature || 'N/A'}</td>
+          <td>${item.Route_From || 'N/A'}</td>
+          <td>${item.Route_To || 'N/A'}</td>
+          <td>${item.timestamp ? new Date(item.timestamp).toLocaleString() : 'N/A'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+      async function logout() {
+          try {
+            // Clear client-side storage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Call backend logout
+            await fetch('/auth/logout', {
+              method: 'GET',
+              credentials: 'include' // Important for cookie clearing
+            });
+            
+            // Redirect to login page
+            window.location.href = '/frontend/index.html';
+          } catch (error) {
+            console.error('Logout failed:', error);
+            window.location.href = '/frontend/index.html';
+          }
+        }
+ 
+
+    window.onload = function () {
+      loadDeviceData();
+      setInterval(loadDeviceData, 10000);  // Refresh every 10 seconds
+
+      document.getElementById('deviceIdSelect').addEventListener('change', renderTable);
+      document.getElementById('limitSelect').addEventListener('change', renderTable);
+    };
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <ul class="nav-top">
+        <li><a href="dashboard.html"><i class="fas fa-chart-line"></i> <span> Dashboard</span></a></li>
+        <li><a href="account.html"><i class="fas fa-user-circle"></i> <span> My Account</span></a></li>
+        <li><a href="shipment.html"><i class="fas fa-box-open"></i> <span> My Shipment</span></a></li>
+        <li><a href="new_shipment.html"><i class="fas fa-plus-square"></i> <span> New Shipment</span></a></li>
+        <li class="active"><a href="device_data.html"><i class="fas fa-microchip"></i> <span> Device Data</span></a></li>
+        <li id="admin-tools-item" style="display: none;"><a href="admin_tools.html"><i class="fas fa-tools"></i> <span> Admin Tools</span></a></li>
+
+      </ul>
+      <ul class="nav-bottom">
+        <li class="logout"><a href="index.html" onclick="logout(event)"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="main-content">
+      <div class="main-header">
+        <h1>Device Data</h1>
+      </div>
+
+      <!-- Controls for device id and limit -->
+      <div class="controls">
+        <label>
+          Device ID:
+          <select id="deviceIdSelect">
+              <option value="all">All</option>
+              <option value="1150">1150</option>
+              <option value="1151">1151</option>
+              <option value="1152">1152</option>
+              <option value="1153">1153</option>
+              <option value="1154">1154</option>
+              <option value="1155">1155</option>
+              <option value="1156">1156</option>
+              <option value="1157">1157</option>
+              <option value="1158">1158</option>
+          </select>
+        </label>
+        <label>
+          Show
+          <select id="limitSelect">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20" selected>20</option>
+            <option value="50">50</option>
+          </select>
+          entries
+        </label>
+      </div>
+
+      <div class="table-container">
+        <table id="data-table">
+          <thead>
+            <tr>
+              <th>Device ID</th>
+              <th>Battery Level</th>
+              <th>First Sensor Temperature</th>
+              <th>Route From</th>
+              <th>Route To</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Device data will appear here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

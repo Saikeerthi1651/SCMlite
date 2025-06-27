@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Tools - Manage Users</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="style2.css" />
+  <style>
+  /* Additional styles specific to admin_tools page */
+  .container > .main-content {
+    background: #1e272e;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #111;
+    max-width: 1000px;
+    margin: 20px auto;
+    color: #ffffff;
+  }
+  h2 {
+    color: #00cec9;
+    margin-bottom: 1rem;
+  }
+  .filters {
+    margin-bottom: 15px;
+  }
+  input[type="text"] {
+    padding: 6px 10px;
+    margin-right: 10px;
+    border-radius: 4px;
+    border: 1px solid #34495e;
+    min-width: 180px;
+    background-color: #2f3640;
+    color: #ffffff;
+  }
+  button {
+    background-color: #00cec9;
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #008b8b;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    padding: 10px;
+    border: 1px solid #444;
+    text-align: left;
+  }
+  th {
+    background-color: #00cec9;
+    color: white;
+  }
+</style>
+
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <ul class="nav-top">
+        <li><a href="dashboard.html"><i class="fas fa-chart-line"></i><span> Dashboard</span></a></li>
+        <li><a href="account.html"><i class="fas fa-user-circle"></i> <span> My Account</span></a></li>
+        <li><a href="shipment.html"><i class="fas fa-box-open"></i> <span> My Shipment</span></a></li>
+        <li><a href="new_shipment.html"><i class="fas fa-plus-square"></i> <span> New Shipment</span></a></li>
+        <li><a href="device_data.html"><i class="fas fa-microchip"></i> <span> Device Data</span></a></li>
+        <li id="admin-tools-item" style="display: none;">
+          <a href="admin_tools.html"><i class="fas fa-tools"></i> <span> Admin Tools</span></a>
+        </li>
+      </ul>
+      <ul class="nav-bottom">
+        <li class="logout"><a href="index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a></li>
+      </ul>
+    </nav>
+
+    <div class="main-content">
+      <h2>Admin Tools - Manage Users</h2>
+
+      <div class="filters">
+        <input type="text" id="filterEmail" placeholder="Filter by Email" />
+        <button onclick="loadUsers()">Filter</button>
+      </div>
+
+      <table id="usersTable" aria-label="User management table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Created At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function getToken() {
+      return localStorage.getItem("access_token");
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const role = localStorage.getItem("user_role");
+      if (role === "admin") {
+        const adminToolsItem = document.getElementById("admin-tools-item");
+        if (adminToolsItem) {
+          adminToolsItem.style.display = "block";
+        }
+        loadUsers(); // Load users automatically for admins
+      } else {
+        // Redirect if user is not admin
+        window.location.href = 'dashboard.html';
+      }
+    });
+
+      async function logout() {
+          try {
+            // Clear client-side storage
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Call backend logout
+            await fetch('/auth/logout', {
+              method: 'GET',
+              credentials: 'include' // Important for cookie clearing
+            });
+            
+            // Redirect to login page
+            window.location.href = '/frontend/index.html';
+          } catch (error) {
+            console.error('Logout failed:', error);
+            window.location.href = '/frontend/index.html';
+          }
+        }
+ 
+
+    async function fetchUsers(email = '') {
+      let url = 'http://127.0.0.1:8000/admin/users';
+      const params = new URLSearchParams();
+      if (email) {
+        params.append('email', email);
+      }
+      // Note: deviceId is not implemented in the backend's get_users endpoint
+      // if (deviceId) {
+      //   params.append('device_id', deviceId);
+      // }
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      try {
+        const res = await fetch(url, {
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${getToken()}`
+          }
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.detail || 'Failed to fetch users');
+        }
+
+        return await res.json();
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        alert('Error fetching users: ' + err.message);
+        return { users: [] };
+      }
+    }
+
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      return d.toLocaleString();
+    }
+
+    function createUser_Row(user) {
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td>${user.name}</td>
+        <td>${user.email}</td>
+        <td>${user.role}</td>
+        <td>${formatDate(user.created_at)}</td>
+        <td>
+          <button onclick="toggleRole('${user.email}', '${user.role}')">
+            ${user.role === 'admin' ? 'Demote to User' : 'Promote to Admin'}
+          </button>
+          <button onclick="deleteUser('${user.email}')" style="margin-left: 10px; background: #1b60e0;">
+            Delete
+          </button>
+        </td>
+      `;
+
+      return tr;
+    }
+
+    async function loadUsers() {
+      const emailFilter = document.getElementById('filterEmail').value.trim();
+      // const deviceIdFilter = document.getElementById('filterDeviceId').value.trim(); // Not used as backend doesn't support it
+
+      const data = await fetchUsers(emailFilter); // Pass only email filter
+      const tbody = document.querySelector('#usersTable tbody');
+      tbody.innerHTML = '';
+
+      if (Array.isArray(data.users) && data.users.length > 0) {
+        data.users.forEach(user => {
+          tbody.appendChild(createUser_Row(user));
+        });
+      } else {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No users found</td></tr>';
+      }
+    }
+
+    async function toggleRole(email, currentRole) {
+      const newRole = currentRole === 'admin' ? 'user' : 'admin';
+
+      if (!confirm(`Change role of ${email} to ${newRole}?`)) return;
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/admin/users/${encodeURIComponent(email)}/role`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getToken()}`
+          },
+          body: JSON.stringify({ role: newRole })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.detail || 'Failed to change role');
+        }
+
+        alert(`Role changed to ${newRole} successfully.`);
+        loadUsers();
+      } catch (err) {
+        console.error('Error changing role:', err);
+        alert('Error changing role: ' + err.message);
+      }
+    }
+
+    async function deleteUser(email) {
+      if (!confirm(`Are you sure you want to delete user ${email}? This action cannot be undone.`)) return;
+
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/admin/users/${encodeURIComponent(email)}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${getToken()}`
+          }
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.detail || 'Failed to delete user');
+        }
+
+        alert('User deleted successfully.');
+        loadUsers();
+      } catch (err) {
+        console.error('Error deleting user:', err);
+        alert('Error deleting user: ' + err.message);
+      }
+    }
+  </script>
+</body>
+</html>
