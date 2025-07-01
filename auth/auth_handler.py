@@ -13,6 +13,9 @@ def sign_jwt(email: str, role: str, name: str) -> dict:
     if JWT_SECRET is None:
         raise ValueError("JWT_SECRET must be set in the environment variables.")
 
+
+    
+
     payload = {
         "email": email,
         "role": role,
