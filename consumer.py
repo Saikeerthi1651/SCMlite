@@ -56,6 +56,7 @@ except errors.ConnectionFailure as e:
 
 print("[*] Kafka consumer started. Waiting for messages...")
 
+
 for message in consumer:
     try:
         data = message.value
